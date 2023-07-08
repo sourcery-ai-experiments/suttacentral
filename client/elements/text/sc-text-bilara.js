@@ -122,7 +122,7 @@ export class SCTextBilara extends SCTextCommon {
 
       <main>
         <div id="segmented_text_content" class="html-text-content">
-          ${unsafeHTML(this.markup ? this.markup : ' ')}
+          ${unsafeHTML(this.markup || ' ')}
         </div>
       </main>
 
@@ -296,7 +296,9 @@ export class SCTextBilara extends SCTextCommon {
 
   // Scrolls to the chosen section
   _scrollToSection(sectionId, margin = 120) {
-    if (!sectionId) return;
+    if (!sectionId) {
+      return;
+    }
     try {
       const targetElement = this.querySelector(`#${CSS.escape(sectionId)}`);
       if (targetElement) {
@@ -346,7 +348,7 @@ export class SCTextBilara extends SCTextCommon {
     const Comments = this.querySelectorAll('.comment');
     Comments.forEach(element => {
       const rect = element.getBoundingClientRect();
-      const elementNoId = element.id.slice(8); // id:comment_1 => get: 1
+      const elementNoId = element.id.slice(8);
       const nextComment = this.querySelector(`#comment_${parseInt(elementNoId, 10) + 1}`);
       if (nextComment) {
         const nextCommentTop = nextComment.getBoundingClientRect().top;
@@ -488,10 +490,8 @@ export class SCTextBilara extends SCTextCommon {
   }
 
   _conditionallyPutIntoSpans(lang) {
-    if (this.rootSutta.lang === lang) {
-      if (this.querySelector('.root')) {
-        this._putIntoSpans('.root', lang);
-      }
+    if (this.rootSutta.lang === lang && this.querySelector('.root')) {
+      this._putIntoSpans('.root', lang);
     }
   }
 
@@ -601,9 +601,7 @@ export class SCTextBilara extends SCTextCommon {
         viewCompose = 'pali';
       }
     }
-    this.currentStyles = this.mapStyles.get(viewCompose)
-      ? this.mapStyles.get(viewCompose)
-      : plainStyles;
+    this.currentStyles = this.mapStyles.get(viewCompose) || plainStyles;
 
     const isNone = this.displayedReferences.includes('none') && !window.location.href.includes('#');
     if (isNone) {
@@ -679,17 +677,17 @@ export class SCTextBilara extends SCTextCommon {
   }
 
   _prepareNavigation() {
-    const sutta = this.bilaraTranslatedSutta ? this.bilaraTranslatedSutta : this.bilaraRootSutta;
+    const sutta = this.bilaraTranslatedSutta || this.bilaraRootSutta;
     if (!sutta) {
       this.actions.showToc([]);
       return;
     }
     const dummyElement = document.createElement('template');
     dummyElement.innerHTML = this.markup?.trim();
-    let arrayTOC = Array.from(dummyElement.content.querySelectorAll('h2')).map(elem => {
+    let arrayTOC = Array.from(dummyElement.content.querySelectorAll('h2,h3,h4,h5,h6')).map(elem => {
       const id = elem.firstElementChild ? elem.firstElementChild.id : null;
       if (sutta[id]) {
-        return { link: id, name: this._stripLeadingOrdering(sutta[id]) };
+        return { link: id, name: this._stripLeadingOrdering(sutta[id]), tagName: elem.tagName };
       }
     });
     arrayTOC = arrayTOC.filter(Boolean);

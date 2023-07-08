@@ -597,7 +597,7 @@ export class SCTextPageSelector extends LitLocalized(LitElement) {
 
     const rootTextAuthor = responseData.root_text ? responseData.root_text.author : '';
     const author = responseData.translation ? responseData.translation.author : rootTextAuthor;
-    let acronym = responseData.suttaplex.acronym
+    const acronym = responseData.suttaplex.acronym
       ? responseData.suttaplex.acronym.split(/\/\//)[0]
       : this._transformId(responseData.suttaplex.uid, expansionReturns);
 
@@ -638,9 +638,13 @@ export class SCTextPageSelector extends LitLocalized(LitElement) {
       uidParts.forEach(item => {
         if (!expansionReturns[0][item]) {
           const tailMatch = item.match(/\d+.*/g);
-          if (tailMatch) tail = `${tailMatch[0]}–`;
+          if (tailMatch) {
+            tail = `${tailMatch[0]}–`;
+          }
           const itemMatch = item.match(/[a-z]*/g);
-          if (itemMatch) item = itemMatch[0];
+          if (itemMatch) {
+            item = itemMatch[0];
+          }
         }
         if (item && expansionReturns[0][item]) {
           scAcronym += `${expansionReturns[0][item][0]} ${tail}`;

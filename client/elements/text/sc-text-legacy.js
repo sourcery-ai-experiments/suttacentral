@@ -264,10 +264,12 @@ export class SCTextLegacy extends SCTextCommon {
     }
     const dummyElement = document.createElement('template');
     dummyElement.innerHTML = sutta;
-    let arrayTOC = Array.from(dummyElement.content.querySelectorAll('h2')).map((elem, index) => {
-      const id = index + 1;
-      return { link: id, name: elem.innerText };
-    });
+    let arrayTOC = Array.from(dummyElement.content.querySelectorAll('h2,h3,h4,h5')).map(
+      (elem, index) => {
+        const id = index + 1;
+        return { link: id, name: elem.innerText, tagName: elem.tagName };
+      }
+    );
     arrayTOC = arrayTOC.filter(Boolean);
     this.actions.showToc(arrayTOC);
   }
@@ -311,8 +313,12 @@ export class SCTextLegacy extends SCTextCommon {
       return;
     }
     let divisionId = /^[a-z]+/.exec(this.sutta.uid)[0];
-    if (divisionId === 'pli') divisionId = 'vi';
-    if (divisionId === 'iti') divisionId = 'it';
+    if (divisionId === 'pli') {
+      divisionId = 'vi';
+    }
+    if (divisionId === 'iti') {
+      divisionId = 'it';
+    }
     if (this.paragraphs && this.showParagraphs) {
       this.paragraphs.forEach(paragraph => {
         const refs = this.querySelector('#simple_text_content').querySelectorAll(
@@ -430,7 +436,9 @@ export class SCTextLegacy extends SCTextCommon {
   }
 
   _scrollToSection(sectionId, margin = 120) {
-    if (!sectionId) return;
+    if (!sectionId) {
+      return;
+    }
     try {
       let targetElement = null;
       if (isNaN(sectionId)) {
@@ -469,11 +477,9 @@ export class SCTextLegacy extends SCTextCommon {
 
   _conditionallyPutIntoSpans(lang) {
     const suttaLang = this.sutta?.lang;
-    if (suttaLang === lang) {
-      if (this.querySelector('article')) {
-        this._putIntoSpans('article', lang);
-        this._addWordSpanId();
-      }
+    if (suttaLang === lang && this.querySelector('article')) {
+      this._putIntoSpans('article', lang);
+      this._addWordSpanId();
     }
   }
 
@@ -599,7 +605,9 @@ export class SCTextLegacy extends SCTextCommon {
     const arraySpans = Array.from(allWordSpans);
     arraySpans.forEach(word => {
       word.onclick = e => {
-        if (!this.isChineseLookupEnabled) return;
+        if (!this.isChineseLookupEnabled) {
+          return;
+        }
         const scBottomSheet = this.querySelector('sc-bottom-sheet');
         if (scBottomSheet) {
           this._removeDefineFocusedClass();

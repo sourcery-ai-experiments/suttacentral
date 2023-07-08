@@ -15,7 +15,20 @@ export class SCTopSheetToC extends SCTopSheetCommon {
 
       .unordered-ol {
         list-style-type: none;
-      }`
+      }
+
+      .subsections-H3 {
+        text-indent: 1em;
+      }
+
+      .subsections-H4 {
+        text-indent: 2em;
+      }
+
+      .subsections-H5 {
+        text-indent: 3em;
+      }
+    `,
   ];
 
   static properties = {
@@ -62,7 +75,7 @@ export class SCTopSheetToC extends SCTopSheetCommon {
               ? this.items.map(
                   item =>
                     html`
-                      <li>
+                      <li class=${`subsections-${item.tagName}`}>
                         <a @click=${this._hideMenu} href=${`#${item.link}`}
                           >${unsafeHTML(item.name)}</a
                         >
